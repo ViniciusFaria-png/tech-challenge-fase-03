@@ -15,9 +15,9 @@ export default function Home() {
   const [posts, setPosts] = useState<Post[]>(mockPosts);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
-
   const filteredPosts = filterPostsBySubject(posts, selectedSubject);
   const sortedPosts = sortPosts(filteredPosts, sortBy);
+
   const activeFilters = getActiveFilters(selectedSubject);
 
   const handleRemoveFilter = (filter: string) => {
@@ -31,9 +31,7 @@ export default function Home() {
       ...postData,
       id: Date.now().toString(),
       timestamp: "Just now",
-      likes: 0,
-      comments: 0,
-      isLiked: false
+   
     };
     
     setPosts([newPost, ...posts]);

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Teacher Posts",
+  title: "Posts Teachers FIAP",
   description: "Discover inspiring stories, creative lessons, and educational insights from teachers around the world.",
 };
 

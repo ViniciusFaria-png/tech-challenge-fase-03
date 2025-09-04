@@ -15,7 +15,7 @@ export function Header({ isLoggedIn, onCreatePost, onLogout }: HeaderProps) {
       <div className="container flex h-16 items-center">
         <div className="flex items-center space-x-2">
           <BookOpen className="h-6 w-6 text-primary" />
-          <span className="text-xl font-semibold">TeacherHub</span>
+          <span className="text-xl font-semibold">PostsHub</span>
         </div>
         
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
@@ -37,27 +37,11 @@ export function Header({ isLoggedIn, onCreatePost, onLogout }: HeaderProps) {
                 <span className="ml-2">Create Post</span>
               </Button>
             )}
-            <Button variant="ghost" size="sm">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline-block ml-2">Teachers</span>
-            </Button>
-            {isLoggedIn && (
-              <Button variant="ghost" size="sm">
-                <Bell className="h-4 w-4" />
-                <span className="hidden sm:inline-block ml-2">Updates</span>
-              </Button>
-            )}
             {isLoggedIn ? (
-              <>
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="https://images.unsplash.com/photo-1584554376766-ac0f2c65e949?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxteGVyJTIwcG9ydHJhaXQlMjBwcm9mZXNzaW9uYWx8ZW58MXx8fHwxNzU2MzcwNTMxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral" />
-                  <AvatarFallback>YU</AvatarFallback>
-                </Avatar>
-                <Button variant="ghost" size="sm" onClick={onLogout}>
-                  <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline-block ml-2">Logout</span>
-                </Button>
-              </>
+              <Button variant="ghost" size="sm" onClick={onLogout}>
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline-block ml-2">Logout</span>
+              </Button>
             ) : (
               <Button variant="default" size="sm" onClick={() => {}}>
                 Login

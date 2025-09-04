@@ -11,17 +11,10 @@ interface PostCardProps {
     id: string;
     teacher: {
       name: string;
-      avatar: string;
       subject: string;
-      school: string;
     };
     content: string;
-    image?: string;
     timestamp: string;
-    likes: number;
-    comments: number;
-    isLiked: boolean;
-    tags: string[];
   };
   isLoggedIn?: boolean;
   onEdit?: (post: PostCardProps['post']) => void;
@@ -34,10 +27,6 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={post.teacher.avatar} />
-              <AvatarFallback>{post.teacher.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-            </Avatar>
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
                 <h3 className="font-semibold">{post.teacher.name}</h3>
@@ -49,7 +38,6 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
               <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                 <div className="flex items-center space-x-1">
                   <MapPin className="h-3 w-3" />
-                  <span>{post.teacher.school}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Clock className="h-3 w-3" />
@@ -88,40 +76,8 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
         <div className="space-y-4">
           <p className="text-foreground leading-relaxed">{post.content}</p>
           
-          {post.image && (
-            <div className="relative overflow-hidden rounded-lg">
-              <ImageWithFallback 
-                src={post.image} 
-                alt="Post content"
-                className="w-full h-64 object-cover"
-              />
-            </div>
-          )}
-          
-          {post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  #{tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-          
           <div className="flex items-center justify-between pt-2 border-t">
             <div className="flex items-center space-x-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className={`space-x-2 ${post.isLiked ? 'text-red-500' : ''}`}
-              >
-                <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
-                <span>{post.likes}</span>
-              </Button>
-              <Button variant="ghost" size="sm" className="space-x-2">
-                <MessageCircle className="h-4 w-4" />
-                <span>{post.comments}</span>
-              </Button>
             </div>
             <Button variant="ghost" size="sm">
               <Share2 className="h-4 w-4" />
