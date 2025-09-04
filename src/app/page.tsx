@@ -11,7 +11,7 @@ import { filterPostsBySubject, sortPosts, getActiveFilters, Post } from "../util
 export default function Home() {
   const [selectedSubject, setSelectedSubject] = useState("All Subjects");
   const [sortBy, setSortBy] = useState("recent");
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [posts, setPosts] = useState<Post[]>(mockPosts);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
@@ -65,6 +65,10 @@ export default function Home() {
     setEditingPost(null);
   };
 
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
   const handleOpenCreateDialog = () => {
     setEditingPost(null);
     setCreateDialogOpen(true);
@@ -76,6 +80,7 @@ export default function Home() {
         isLoggedIn={isLoggedIn}
         onCreatePost={handleOpenCreateDialog}
         onLogout={handleLogout}
+        onLogin={handleLogin}
       />
       
       <main className="container mx-auto px-4 py-8">

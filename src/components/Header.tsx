@@ -2,16 +2,20 @@ import { Search, BookOpen, Users, Bell, Plus, LogOut } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Login } from "./Login";
+import { useState } from "react";
 
 interface HeaderProps {
   isLoggedIn: boolean;
   onCreatePost: () => void;
   onLogout: () => void;
+  onLogin: () => void;
 }
 
-export function Header({ isLoggedIn, onCreatePost, onLogout }: HeaderProps) {
+export function Header({ isLoggedIn, onCreatePost, onLogout, onLogin }: HeaderProps) {
+  const [loginOpen, setLoginOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-pink-800 backdrop-blur">
       <div className="container flex h-16 items-center">
         <div className="flex items-center space-x-2">
           <BookOpen className="h-6 w-6 text-primary" />
@@ -43,10 +47,15 @@ export function Header({ isLoggedIn, onCreatePost, onLogout }: HeaderProps) {
                 <span className="hidden sm:inline-block ml-2">Logout</span>
               </Button>
             ) : (
-              <Button variant="default" size="sm" onClick={() => {}}>
+              <Button variant="default" size="sm" onClick={() => setLoginOpen(true)}>
                 Login
               </Button>
             )}
+            <Login
+              open={loginOpen}
+              onOpenChange={setLoginOpen}
+              onLogin={onLogin}
+            />
           </nav>
         </div>
       </div>
