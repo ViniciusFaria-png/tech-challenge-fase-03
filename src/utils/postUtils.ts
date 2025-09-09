@@ -8,22 +8,25 @@ export interface Post {
   timestamp: string;
 }
 
-export function filterPostsBySubject(posts: Post[], selectedSubject: string): Post[] {
-  return posts.filter(post => 
-    selectedSubject === "All Subjects" || post.teacher.subject === selectedSubject
-  );
+export interface ApiPost {
+  id: string;
+  titulo: string;
+  resumo: string;
+  conteudo: string;
+  professor_id: number;
+  created_at: string;
+  updated_at: string;
 }
 
-export function sortPosts(posts: Post[], sortBy: string): Post[] {
-  return [...posts].sort((a, b) => {
-    return 0; // Keep original order for "recent"
-  });
+export function transformApiPost(apiPost: ApiPost): Post {
+  return {
+    id: apiPost.id,
+    teacher: {
+      name: `Professor ${apiPost.professor_id}`,
+      subject: "General"
+    },
+    content: `${apiPost.titulo}\n\n${apiPost.resumo}\n\n${apiPost.conteudo}`,
+    timestamp: new Date(apiPost.created_at).toLocaleDateString()
+  };
 }
 
-export function getActiveFilters(selectedSubject: string): string[] {
-  const activeFilters = [];
-  if (selectedSubject !== "All Subjects") {
-    activeFilters.push(selectedSubject);
-  }
-  return activeFilters;
-}

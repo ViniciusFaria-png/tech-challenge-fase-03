@@ -1,19 +1,22 @@
-import { Heart, MessageCircle, Share2, BookOpen, Clock, MapPin, Edit, Trash2, MoreHorizontal } from "lucide-react";
+import { Clock, Edit, Trash2, MoreHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 interface PostCardProps {
   post: {
     id: string;
-    teacher: {
+    teacher?: {
       name: string;
       subject: string;
     };
-    content: string;
-    timestamp: string;
+    content?: string;
+    timestamp?: string;
+    titulo?: string;
+    resumo?: string;
+    conteudo?: string;
+    professor_id?: number;
+    created_at?: string;
   };
   isLoggedIn?: boolean;
   onEdit?: (post: PostCardProps['post']) => void;
@@ -21,28 +24,20 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCardProps) {
+  // Handle both transformed and raw API data
+  const titulo = post.titulo || post.content?.split('\n\n')[0] || 'Untitled';
+  const conteudo = post.conteudo || post.content?.split('\n\n')[2] || '';
+  const timestamp = post.timestamp || (post.created_at ? new Date(post.created_at).toLocaleDateString() : '');
+  
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-3">
+    <Card className="w-full hover:shadow-lg transition-shadow duration-200">
+      <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="space-y-1">
-              <div className="flex items-center space-x-2">
-                <h3 className="font-semibold">{post.teacher.name}</h3>
-                <Badge variant="secondary" className="text-xs">
-                  <BookOpen className="h-3 w-3 mr-1" />
-                  {post.teacher.subject}
-                </Badge>
-              </div>
-              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                <div className="flex items-center space-x-1">
-                  <MapPin className="h-3 w-3" />
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Clock className="h-3 w-3" />
-                  <span>{post.timestamp}</span>
-                </div>
-              </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-foreground mb-2 leading-tight">{titulo}</h2>
+            <div className="flex items-center text-xs text-muted-foreground">
+              <Clock className="h-3 w-3 mr-1" />
+              <span>{timestamp}</span>
             </div>
           </div>
           
@@ -71,19 +66,13 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
         </div>
       </CardHeader>
       
-      <CardContent className="pt-0">
-        <div className="space-y-4">
-          <p className="text-foreground leading-relaxed">{post.content}</p>
-          
-          <div className="flex items-center justify-between pt-2 border-t">
-            <div className="flex items-center space-x-4">
-            </div>
-            <Button variant="ghost" size="sm">
-              <Share2 className="h-4 w-4" />
-            </Button>
+      {conteudo && (
+        <CardContent className="pt-0">
+          <div className="prose prose-sm max-w-none">
+            <p className="text-foreground leading-relaxed text-justify">{conteudo}</p>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   );
 }

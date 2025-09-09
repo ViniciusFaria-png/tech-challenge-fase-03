@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Header } from "../components/Header";
-import { PostCard } from "../components/PostCard";
-import { FilterBar } from "../components/FilterBar";
-import { CreatePostDialog } from "../components/CreatePostDialog";
-import { Post, ApiPost, transformApiPost } from "../utils/postUtils";
+import { Header } from "@/components/Header";
+import { PostCard } from "@/components/PostCard";
+import { FilterBar } from "@/components/FilterBar";
+import { CreatePostDialog } from "@/components/CreatePostDialog";
+import { Post, ApiPost, transformApiPost } from "@/utils/postUtils";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,11 +26,8 @@ export default function Home() {
       const response = await fetch('/api/posts');
       if (response.ok) {
         const data = await response.json();
-        console.log('Raw API data:', data);
         const apiPosts: ApiPost[] = Array.isArray(data) ? data : [];
-        console.log('API posts array:', apiPosts);
         const transformedPosts = apiPosts.map(transformApiPost);
-        console.log('Transformed posts:', transformedPosts);
         setPosts(transformedPosts);
       } else {
         console.error('Failed to fetch posts:', response.status, response.statusText);
@@ -47,8 +44,6 @@ export default function Home() {
   useEffect(() => {
     fetchPosts();
   }, []);
-
-
 
   const handleCreatePost = async (postData: Omit<Post, 'id' | 'timestamp' | 'likes' | 'comments' | 'isLiked'>) => {
     try {
