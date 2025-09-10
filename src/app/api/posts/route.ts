@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = 'https://blog-dinamico-app.onrender.com/posts';
+const BACKEND_URL = 'https://blog-dinamico-app.onrender.com';
 
 export async function GET() {
   try {
-    const response = await fetch(BACKEND_URL);
+    const response = await fetch(`${BACKEND_URL}/posts`);
     const data = await response.json();
     
     // Extract posts from the response
@@ -19,7 +19,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const response = await fetch(BACKEND_URL, {
+    const response = await fetch(`${BACKEND_URL}/posts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -14,13 +15,32 @@ interface LoginProps {
 export function Login({ open, onOpenChange, onLogin }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin();
-    onOpenChange(false);
-    setEmail("");
-    setPassword("");
+    console.log('Login dialog form submitted');
+    try {
+      console.log('Making fetch request to /api/auth/signin from dialog');
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      console.log('Dialog response received:', response.status, response.statusText);
+      if (response.ok) {
+        onLogin();
+        onOpenChange(false);
+        setEmail("");
+        setPassword("");
+        router.push('/');
+      } else {
+        const errorData = await response.text();
+        console.log('Dialog response not ok:', errorData);
+      }
+    } catch (error) {
+      console.error('Error signing in:', error);
+    }
   };
 
   return (

@@ -1,18 +1,36 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle sign-in logic here
-    console.log("Sign in:", { email, password });
+    console.log('Sign-in form submitted');
+    try {
+      console.log('Making fetch request to /api/auth/signin');
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      console.log('Response received:', response.status, response.statusText);
+      if (response.ok) {
+        console.log("User signed in")
+        router.push('/');
+      } else {
+        const errorData = await response.text();
+        console.log('Response not ok:', errorData);
+      }
+    } catch (error) {
+      console.error('Error signing in:', error);
+    }
   };
 
   return (
