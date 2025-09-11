@@ -52,8 +52,8 @@ export function Login({ open, onOpenChange, onLogin }: LoginProps) {
         setEmail("");
         setPassword("");
         setError("");
-        onOpenChange(false);
         onLogin();
+        onOpenChange(false);
         router.push('/');
       } else {
         console.log('Login FAILED from dialog - Error data:', responseData);

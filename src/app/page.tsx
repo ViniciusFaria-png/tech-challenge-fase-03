@@ -45,10 +45,8 @@ export default function Home() {
   };
 
   const checkAuthStatus = () => {
-    const hasAuthToken = document.cookie.includes('auth-token=');
-    if (hasAuthToken) {
-      setIsLoggedIn(true);
-    }
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    setIsLoggedIn(isAuthenticated);
   };
 
   useEffect(() => {
@@ -118,12 +116,14 @@ export default function Home() {
     } catch (error) {
       console.log('Logout error:', error);
     }
+    localStorage.removeItem('isAuthenticated');
     setIsLoggedIn(false);
     setCreateDialogOpen(false);
     setEditingPost(null);
   };
 
   const handleLogin = () => {
+    localStorage.setItem('isAuthenticated', 'true');
     setIsLoggedIn(true);
   };
 

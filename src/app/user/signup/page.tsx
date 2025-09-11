@@ -55,7 +55,9 @@ export default function SignUpPage() {
   };
 
   const handleLogin = () => {
-    setShowLogin(true);
+    localStorage.setItem('isAuthenticated', 'true');
+    setShowLogin(false);
+    router.push('/');
   };
 
   return (
