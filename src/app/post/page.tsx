@@ -112,7 +112,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Header 
         isLoggedIn={isLoggedIn}
         onCreatePost={handleOpenCreateDialog}
@@ -121,40 +121,69 @@ export default function Home() {
       />
       
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold">Teacher Posts</h1>
-            <p className="text-muted-foreground">
+        <div className="max-w-5xl mx-auto space-y-8">
+          {/* Hero Section */}
+          <div className="text-center space-y-4 py-16 px-8 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-xl">
+            <h1 className="text-5xl font-bold text-white mb-4">
+              Teacher <span className="text-pink-400">Posts</span>
+            </h1>
+            <p className="text-xl text-white max-w-3xl mx-auto">
               Discover inspiring stories, creative lessons, and educational insights from teachers around the world.
-              {!isLoggedIn && " (View Only Mode)"}
             </p>
           </div>
 
-          <FilterBar
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            isLoggedIn={isLoggedIn}
-            onCreatePost={handleOpenCreateDialog}
-          />
+          {/* Filter Section */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-100">
+            <FilterBar
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              isLoggedIn={isLoggedIn}
+              onCreatePost={handleOpenCreateDialog}
+            />
+          </div>
 
+          {/* Posts Section */}
           <div className="space-y-6">
             {loading ? (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">Loading posts...</p>
+              <div className="text-center py-16 bg-white rounded-xl shadow-lg border-2 border-gray-100">
+                <div className="inline-flex items-center space-x-3">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+                  <p className="text-black text-lg font-medium">Loading posts...</p>
+                </div>
               </div>
             ) : filteredPosts.length > 0 ? (
-              filteredPosts.map((post) => (
-                <PostCard 
-                  key={post.id} 
-                  post={post}
-                  isLoggedIn={isLoggedIn}
-                  onEdit={handleEditPost}
-                  onDelete={handleDeletePost}
-                />
-              ))
+              <div className="space-y-6">
+                {filteredPosts.map((post) => (
+                  <div key={post.id} className="transform hover:scale-[1.01] transition-all duration-200">
+                    <PostCard 
+                      post={post}
+                      isLoggedIn={isLoggedIn}
+                      onEdit={handleEditPost}
+                      onDelete={handleDeletePost}
+                    />
+                  </div>
+                ))}
+              </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No posts found matching your search.</p>
+              <div className="text-center py-16 bg-white rounded-xl shadow-lg border-2 border-gray-100">
+                <div className="space-y-4">
+                  <div className="text-6xl mb-4">📚</div>
+                  <h3 className="text-2xl font-bold text-black">No posts found</h3>
+                  <p className="text-gray-600 max-w-md mx-auto">
+                    {searchTerm ? 
+                      "Try adjusting your search terms or browse all posts." : 
+                      "Be the first to share your teaching experience!"
+                    }
+                  </p>
+                  {isLoggedIn && !searchTerm && (
+                    <button
+                      onClick={handleOpenCreateDialog}
+                      className="mt-6 px-8 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg"
+                    >
+                      Create Your First Post
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>

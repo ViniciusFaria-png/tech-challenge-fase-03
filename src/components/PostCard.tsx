@@ -30,32 +30,32 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
   const timestamp = post.timestamp || (post.created_at ? new Date(post.created_at).toLocaleDateString() : '');
   
   return (
-    <Card className="w-full hover:shadow-lg transition-shadow duration-200">
-      <CardHeader className="pb-4">
+    <Card className="w-full bg-white border-2 border-gray-200 hover:border-pink-300 hover:shadow-xl transition-all duration-200 rounded-xl">
+      <CardHeader className="pb-4 bg-gray-50 rounded-t-xl">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-foreground mb-2 leading-tight">{titulo}</h2>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <Clock className="h-3 w-3 mr-1" />
-              <span>{timestamp}</span>
+            <h2 className="text-2xl font-bold text-black mb-3 leading-tight">{titulo}</h2>
+            <div className="flex items-center text-sm text-gray-600">
+              <Clock className="h-4 w-4 mr-2 text-pink-500" />
+              <span className="font-medium">{timestamp}</span>
             </div>
           </div>
           
           {isLoggedIn && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <MoreHorizontal className="h-4 w-4" />
+                <Button variant="ghost" size="sm" className="hover:bg-pink-100 text-gray-600 hover:text-pink-600">
+                  <MoreHorizontal className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onEdit?.(post)}>
-                  <Edit className="h-4 w-4 mr-2" />
+              <DropdownMenuContent align="end" className="bg-white border-2 border-gray-200 shadow-lg">
+                <DropdownMenuItem onClick={() => onEdit?.(post)} className="hover:bg-pink-50 text-black">
+                  <Edit className="h-4 w-4 mr-2 text-pink-500" />
                   Edit Post
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => onDelete?.(post.id)}
-                  className="text-destructive"
+                  className="hover:bg-red-50 text-red-600"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete Post
@@ -67,9 +67,9 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
       </CardHeader>
       
       {conteudo && (
-        <CardContent className="pt-0">
+        <CardContent className="pt-0 p-6">
           <div className="prose prose-sm max-w-none">
-            <p className="text-foreground leading-relaxed text-justify">{conteudo}</p>
+            <p className="text-black leading-relaxed text-justify text-base">{conteudo}</p>
           </div>
         </CardContent>
       )}

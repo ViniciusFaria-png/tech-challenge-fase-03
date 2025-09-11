@@ -37,7 +37,7 @@ export function Header({ isLoggedIn, onCreatePost, onLogout, onLogin }: HeaderPr
               </Button>
             ) : (
               <Button variant="default" size="sm" onClick={() => setLoginOpen(true)}>
-                Login
+                SignIn
               </Button>
             )}
             <Login
