@@ -23,12 +23,15 @@ export default function Home() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
+      console.log('Fetching posts from /api/posts');
       const response = await fetch('/api/posts');
+      console.log('Response status:', response.status);
       if (response.ok) {
         const data = await response.json();
         console.log('Raw API data:', data);
+        console.log('Data type:', typeof data, 'Is array:', Array.isArray(data));
         const apiPosts: ApiPost[] = Array.isArray(data) ? data : [];
-        console.log('API posts array:', apiPosts);
+        console.log('API posts array length:', apiPosts.length);
         const transformedPosts = apiPosts.map(transformApiPost);
         console.log('Transformed posts:', transformedPosts);
         setPosts(transformedPosts);
@@ -56,7 +59,7 @@ export default function Home() {
 
 
 
-  const handleCreatePost = async (postData: Omit<Post, 'id' | 'timestamp' | 'likes' | 'comments' | 'isLiked'>) => {
+  const handleCreatePost = async (postData: Omit<Post, 'titulo' | 'resumo' | 'conteudo'>) => {
     try {
       const response = await fetch('/api/posts', {
         method: 'POST',
@@ -64,10 +67,14 @@ export default function Home() {
         body: JSON.stringify(postData)
       });
       if (response.ok) {
+        alert('Post created successfully!');
         fetchPosts();
+      } else {
+        alert('Failed to create post. Please try again.');
       }
     } catch (error) {
       console.error('Error creating post:', error);
+      alert('Error creating post. Please try again.');
     }
   };
 

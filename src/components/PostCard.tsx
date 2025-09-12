@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 interface PostCardProps {
   post: {
-    id: string;
+    id?: string;
     teacher?: {
       name: string;
       subject: string;
@@ -54,7 +54,7 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
                   Edit Post
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onClick={() => onDelete?.(post.id)}
+                  onClick={() => post.id && onDelete?.(post.id)}
                   className="hover:bg-red-50 text-red-600"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />

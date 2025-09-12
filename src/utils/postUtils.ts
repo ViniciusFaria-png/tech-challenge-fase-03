@@ -1,32 +1,22 @@
 export interface Post {
-  id: string;
-  teacher: {
-    name: string;
-    subject: string;
-  };
-  content: string;
-  timestamp: string;
-}
-
-export interface ApiPost {
-  id: string;
+  id?: string;
   titulo: string;
   resumo: string;
   conteudo: string;
-  professor_id: number;
-  created_at: string;
-  updated_at: string;
+  professor_id?: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export function transformApiPost(apiPost: ApiPost): Post {
+export function transformApiPost(apiPost: Post): Post {
   return {
     id: apiPost.id,
-    teacher: {
-      name: `Professor ${apiPost.professor_id}`,
-      subject: "General"
-    },
-    content: `${apiPost.titulo}\n\n${apiPost.resumo}\n\n${apiPost.conteudo}`,
-    timestamp: new Date(apiPost.created_at).toLocaleDateString()
+    conteudo: apiPost.conteudo,
+    titulo: apiPost.titulo,
+    resumo: apiPost.resumo,
+    professor_id: apiPost.professor_id,
+    updated_at: new Date(apiPost.updated_at).toLocaleDateString(),
+    created_at: new Date(apiPost.created_at).toLocaleDateString()
   };
 }
 

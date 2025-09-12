@@ -3,49 +3,35 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Badge } from "./ui/badge";
 import { X, Plus } from "lucide-react";
-import { Post } from "../utils/postUtils";
+import { Post } from "@/utils/postUtils"
 
 interface CreatePostDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreatePost: (post: Omit<Post, 'id' | 'timestamp' | 'likes' | 'comments' | 'isLiked'>) => void;
+  onCreatePost: (post:  Pick<Post, 'titulo' | 'resumo' | 'conteudo'>) => void;
   editingPost?: Post | null;
 }
 
 export function CreatePostDialog({ open, onOpenChange, onCreatePost, editingPost }: CreatePostDialogProps) {
-  const [content, setContent] = useState(editingPost?.content || "");
-  const [subject, setSubject] = useState(editingPost?.teacher.subject || "");
-  
-
-  const subjects = [
-    "Mathematics",
-    "Science", 
-    "English",
-    "History",
-    "Art",
-    "Physical Education",
-    "Music",
-    "Computer Science"
-  ];
+  const [titulo, setTitulo] = useState("");
+  const [resumo, setResumo] = useState("");
+  const [conteudo, setConteudo] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const postData = {
-      teacher: {
-        name: "Sarah Johnson", // In a real app, this would come from user session
-        subject
-      },
-      content: content.trim()
+      titulo: titulo,
+      resumo: resumo,
+      conteudo: conteudo
     };
 
     onCreatePost(postData);
     
     // Reset form
-    setContent("");
-    setSubject("");
+    setTitulo("");
+    setResumo("");
+    setConteudo("");
     onOpenChange(false);
   };
 
@@ -58,49 +44,76 @@ export function CreatePostDialog({ open, onOpenChange, onCreatePost, editingPost
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="sm:max-w-[600px] bg-white border-2 border-gray-200 shadow-2xl rounded-xl">
+        <DialogHeader className="text-center pb-6">
+          <DialogTitle className="text-3xl font-bold text-black mb-2">
             {editingPost ? "Edit Post" : "Create New Post"}
           </DialogTitle>
+          <p className="text-gray-600">
+            {editingPost ? "Update your post content" : "Share your teaching experience with the community"}
+          </p>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="subject">Subject</label>
-              <Select value={subject} onValueChange={setSubject}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select subject" />
-                </SelectTrigger>
-                <SelectContent>
-                  {subjects.map((subj) => (
-                    <SelectItem key={subj} value={subj}>
-                      {subj}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label htmlFor="titulo" className="text-sm font-semibold text-gray-700">
+                Título
+              </label>
+              <Input
+                id="titulo"
+                value={titulo}
+                onChange={(e) => setTitulo(e.target.value)}
+                placeholder="Digite o título do post"
+                className="h-12 px-4 bg-gray-50 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="resumo" className="text-sm font-semibold text-gray-700">
+                Resumo
+              </label>
+              <Textarea
+                id="resumo"
+                value={resumo}
+                onChange={(e) => setResumo(e.target.value)}
+                placeholder="Escreva um breve resumo do post"
+                rows={3}
+                className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all text-black placeholder:text-gray-500 resize-none"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="conteudo" className="text-sm font-semibold text-gray-700">
+                Conteúdo
+              </label>
+              <Textarea
+                id="conteudo"
+                value={conteudo}
+                onChange={(e) => setConteudo(e.target.value)}
+                placeholder="Escreva o conteúdo completo do post"
+                rows={6}
+                className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all text-black placeholder:text-gray-500 resize-none"
+                required
+              />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="content">Post Content</label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Share your teaching experience, classroom activities, or educational insights..."
-              rows={4}
-              required
-            />
-          </div>
-
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              className="h-12 px-6 bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-semibold rounded-lg transition-all duration-200"
+            >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button 
+              type="submit"
+              className="h-12 px-6 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
               {editingPost ? "Update Post" : "Create Post"}
             </Button>
           </div>
