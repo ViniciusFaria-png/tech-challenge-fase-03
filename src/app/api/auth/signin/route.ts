@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     
     const data = await response.json();
     console.log(`Return from backend: ${JSON.stringify(data)}`)
-    if (data.token) {
+    if (data.token ) {
       const res = NextResponse.json(data);
       res.cookies.set('auth-token', data.token, {
         httpOnly: true,

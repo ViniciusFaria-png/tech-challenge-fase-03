@@ -7,12 +7,13 @@ import { useState } from "react";
 
 interface HeaderProps {
   isLoggedIn: boolean;
+  isProfessor?: boolean;
   onCreatePost: () => void;
   onLogout: () => void;
   onLogin: () => void;
 }
 
-export function Header({ isLoggedIn, onCreatePost, onLogout, onLogin }: HeaderProps) {
+export function Header({ isLoggedIn, isProfessor = false, onCreatePost, onLogout, onLogin }: HeaderProps) {
   const [loginOpen, setLoginOpen] = useState(false);
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-pink-800 backdrop-blur">
@@ -24,7 +25,7 @@ export function Header({ isLoggedIn, onCreatePost, onLogout, onLogin }: HeaderPr
         
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <nav className="flex items-center space-x-1">
-            {isLoggedIn && (
+            {isLoggedIn && isProfessor && (
               <Button onClick={onCreatePost} size="sm" className="hidden sm:flex">
                 <Plus className="h-4 w-4" />
                 <span className="ml-2">Create Post</span>

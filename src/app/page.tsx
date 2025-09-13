@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isProfessor, setIsProfessor] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -45,7 +46,9 @@ export default function Home() {
 
   const checkAuthStatus = () => {
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    const userIsProfessor = localStorage.getItem('isProfessor') === 'true';
     setIsLoggedIn(isAuthenticated);
+    setIsProfessor(userIsProfessor);
   };
 
   useEffect(() => {
@@ -164,14 +167,16 @@ export default function Home() {
       console.log('Logout error:', error);
     }
     localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('isProfessor');
     setIsLoggedIn(false);
+    setIsProfessor(false);
     setCreateDialogOpen(false);
     setEditingPost(null);
   };
 
   const handleLogin = () => {
     localStorage.setItem('isAuthenticated', 'true');
-    setIsLoggedIn(true);
+    checkAuthStatus();
   };
 
   const handleOpenCreateDialog = () => {
@@ -183,6 +188,7 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <Header 
         isLoggedIn={isLoggedIn}
+        isProfessor={isProfessor}
         onCreatePost={handleOpenCreateDialog}
         onLogout={handleLogout}
         onLogin={handleLogin}
@@ -205,8 +211,6 @@ export default function Home() {
             <FilterBar
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
-              isLoggedIn={isLoggedIn}
-              onCreatePost={handleOpenCreateDialog}
             />
           </div>
 
@@ -226,6 +230,7 @@ export default function Home() {
                     <PostCard 
                       post={post}
                       isLoggedIn={isLoggedIn}
+                      isProfessor={isProfessor}
                       onEdit={handleEditPost}
                       onDelete={handleDeletePost}
                     />
@@ -245,7 +250,7 @@ export default function Home() {
                       return message;
                     })()}
                   </p>
-                  {isLoggedIn && !searchTerm && (
+                  {isLoggedIn && isProfessor && !searchTerm && (
                     <button
                       onClick={handleOpenCreateDialog}
                       className="mt-6 px-8 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg"

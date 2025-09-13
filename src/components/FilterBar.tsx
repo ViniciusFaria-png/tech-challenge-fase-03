@@ -1,19 +1,14 @@
-import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Search, Plus } from "lucide-react";
+import { Search } from "lucide-react";
 
 interface FilterBarProps {
   searchTerm: string;
   onSearchChange: (search: string) => void;
-  isLoggedIn?: boolean;
-  onCreatePost?: () => void;
 }
 
 export function FilterBar({ 
   searchTerm,
-  onSearchChange,
-  isLoggedIn = false,
-  onCreatePost
+  onSearchChange
 }: FilterBarProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4">
@@ -27,15 +22,7 @@ export function FilterBar({
         />
       </div>
       
-      {isLoggedIn && (
-        <Button 
-          onClick={onCreatePost}
-          className="h-12 px-6 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-lg shadow-lg transition-colors duration-200"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Create Post
-        </Button>
-      )}
+
     </div>
   );
 }

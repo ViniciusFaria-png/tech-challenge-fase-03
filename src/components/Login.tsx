@@ -49,13 +49,15 @@ export function Login({ open, onOpenChange, onLogin }: LoginProps) {
       
       if (response.ok && responseData.token) {
         console.log('Login SUCCESS from dialog:', responseData);
+        localStorage.setItem('isProfessor', responseData.user?.isProfessor ? 'true' : 'false');
         setEmail("");
         setPassword("");
         setError("");
         onLogin();
         onOpenChange(false);
         router.push('/');
-      } else {
+      }
+      else {
         console.log('Login FAILED from dialog - Error data:', responseData);
         console.log('Error message:', responseData.message);
         setError(responseData.message || 'Login failed. Please try again.');

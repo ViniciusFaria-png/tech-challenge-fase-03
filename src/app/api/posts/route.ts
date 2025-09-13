@@ -5,8 +5,19 @@ const BACKEND_URL = 'https://blog-dinamico-app.onrender.com';
 export async function GET() {
   try {
     const response = await fetch(`${BACKEND_URL}/posts`);
-    const data = await response.json();
     
+    if (!response.ok) {
+      console.error('Backend response not ok:', response.status);
+      return NextResponse.json([]);
+    }
+    
+    const text = await response.text();
+    if (!text.trim()) {
+      console.log('Empty response from backend');
+      return NextResponse.json([]);
+    }
+    
+    const data = JSON.parse(text);
     const posts = (data.posts || []).map((post: any) => ({
       ...post,
       id: post.id || post._id || String(post.professor_id) + '-' + Date.now()
@@ -14,7 +25,7 @@ export async function GET() {
     return NextResponse.json(posts);
   } catch (error) {
     console.error('API Error:', error);
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json([]);
   }
 }
 

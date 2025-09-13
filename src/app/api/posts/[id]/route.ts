@@ -2,6 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = 'https://blog-dinamico-app.onrender.com/posts';
 
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const response = await fetch(`${BACKEND_URL}/${id}`);
+    
+    if (!response.ok) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+    
+    const text = await response.text();
+    if (!text.trim()) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+    
+    const data = JSON.parse(text);
+    return NextResponse.json(data.post || data);
+  } catch (error) {
+    console.error('GET Post Error:', error);
+    return NextResponse.json({ error: 'Failed to fetch post' }, { status: 500 });
+  }
+}
+
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const token = request.cookies.get('auth-token')?.value;
@@ -19,7 +41,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       },
       body: JSON.stringify(body)
     });
-    const data = await response.json();
+    
+    const text = await response.text();
+    if (!text.trim()) {
+      return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
+    }
+    
+    const data = JSON.parse(text);
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
