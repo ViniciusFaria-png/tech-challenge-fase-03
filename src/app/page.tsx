@@ -1,103 +1,282 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { Header } from "../components/Header";
+import { PostCard } from "../components/PostCard";
+import { FilterBar } from "../components/FilterBar";
+import { CreatePostDialog } from "../components/CreatePostDialog";
+import { Post } from "../utils/postUtils";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isProfessor, setIsProfessor] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const { toast } = useToast();
+  
+  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const fetchPosts = async (query?: string) => {
+    try {
+      setLoading(true);
+      const url = query ? `/api/posts?query=${encodeURIComponent(query)}` : '/api/posts';
+      const response = await fetch(url);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const posts: Post[] = Array.isArray(data) ? data : [];
+        setPosts(posts);
+        setFilteredPosts(posts);
+      } else {
+        setPosts([]);
+        setFilteredPosts([]);
+      }
+    } catch (error) {
+      setPosts([]);
+      setFilteredPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkAuthStatus = () => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    const userIsProfessor = localStorage.getItem('isProfessor') === 'true';
+    setIsLoggedIn(isAuthenticated);
+    setIsProfessor(userIsProfessor);
+  };
+
+  useEffect(() => {
+    checkAuthStatus();
+    fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchPosts(searchTerm || undefined);
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+
+
+  const handleCreatePost = async (postData: Pick<Post, 'titulo' | 'resumo' | 'conteudo'>) => {
+    try {
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(postData)
+      });
+      if (response.ok) {
+        await fetchPosts();
+        toast({
+          variant: "success",
+          title: "Success!",
+          description: "Post created successfully!"
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to create post. Please try again."
+        });
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error creating post. Please try again."
+      });
+    }
+  };
+
+  const handleEditPost = (post: any) => {
+    setEditingPost(post as Post);
+    setCreateDialogOpen(true);
+  };
+
+  const handleUpdatePost = async (postData: Pick<Post, 'id' | 'titulo' | 'resumo' | 'conteudo'>) => {
+    if (!editingPost) return;
+    
+    try {
+      const response = await fetch(`/api/posts/${editingPost.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(postData)
+      });
+      if (response.ok) {
+        fetchPosts();
+        setEditingPost(null);
+        toast({
+          variant: "success",
+          title: "Success!",
+          description: "Post updated successfully!"
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to update post. Please try again."
+        });
+      }
+    } catch (error) {
+      console.error('Error updating post:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error updating post. Please try again."
+      });
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    try {
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        fetchPosts();
+        toast({
+          variant: "success",
+          title: "Success!",
+          description: "Post deleted successfully!"
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to delete post. Please try again."
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error deleting post. Please try again."
+      });
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/signout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (error) {
+      console.log('Logout error:', error);
+    }
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('isProfessor');
+    setIsLoggedIn(false);
+    setIsProfessor(false);
+    setCreateDialogOpen(false);
+    setEditingPost(null);
+  };
+
+  const handleLogin = () => {
+    localStorage.setItem('isAuthenticated', 'true');
+    checkAuthStatus();
+  };
+
+  const handleOpenCreateDialog = () => {
+    setEditingPost(null);
+    setCreateDialogOpen(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      <Header 
+        isLoggedIn={isLoggedIn}
+        isProfessor={isProfessor}
+        onCreatePost={handleOpenCreateDialog}
+        onLogout={handleLogout}
+        onLogin={handleLogin}
+      />
+      
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-5xl mx-auto space-y-8">
+          {/* Hero Section */}
+          <div className="text-center space-y-4 py-16 px-8 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-xl">
+            <h1 className="text-5xl font-bold text-white mb-4">
+              Posts de <span className="text-pink-400">Professores</span>
+            </h1>
+            <p className="text-xl text-white max-w-3xl mx-auto">
+              Descubra histórias inspiradoras, aulas criativas e insights educacionais de professores ao redor do mundo.
+            </p>
+          </div>
+
+          {/* Filter Section */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-100">
+            <FilterBar
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+
+          {/* Posts Section */}
+          <div className="space-y-6">
+            {loading ? (
+              <div className="text-center py-16 bg-white rounded-xl shadow-lg border-2 border-gray-100">
+                <div className="inline-flex items-center space-x-3">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+                  <p className="text-black text-lg font-medium">Loading posts...</p>
+                </div>
+              </div>
+            ) : filteredPosts.length > 0 ? (
+              <div className="space-y-6">
+                {filteredPosts.map((post, index) => (
+                  <div key={post.id || `post-${index}`} className="transform hover:scale-[1.01] transition-all duration-200">
+                    <PostCard 
+                      post={post}
+                      isLoggedIn={isLoggedIn}
+                      isProfessor={isProfessor}
+                      onEdit={handleEditPost}
+                      onDelete={handleDeletePost}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 bg-white rounded-xl shadow-lg border-2 border-gray-100">
+                <div className="space-y-4">
+                  <div className="text-6xl mb-4">📚</div>
+                  <h3 className="text-2xl font-bold text-black">No posts found</h3>
+                  <p className="text-gray-600 max-w-md mx-auto">
+                    {(() => {
+                      const message = searchTerm 
+                        ? "Try adjusting your search terms or browse all posts." 
+                        : "Be the first to share your teaching experience!";
+                      return message;
+                    })()}
+                  </p>
+                  {isLoggedIn && isProfessor && !searchTerm && (
+                    <button
+                      onClick={handleOpenCreateDialog}
+                      className="mt-6 px-8 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg"
+                    >
+                      Create Your First Post
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      <CreatePostDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onCreatePost={editingPost ? handleUpdatePost : handleCreatePost}
+        editingPost={editingPost}
+      />
     </div>
   );
 }
