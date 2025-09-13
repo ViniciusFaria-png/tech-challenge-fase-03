@@ -2,32 +2,46 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = 'https://blog-dinamico-app.onrender.com';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const response = await fetch(`${BACKEND_URL}/posts`);
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get('query');
+    
+    const url = query ? `${BACKEND_URL}/posts/search?query=${encodeURIComponent(query)}` : `${BACKEND_URL}/posts`;
+    const response = await fetch(url);
     
     if (!response.ok) {
-      console.error('Backend response not ok:', response.status);
       return NextResponse.json([]);
     }
     
     const text = await response.text();
     if (!text.trim()) {
-      console.log('Empty response from backend');
       return NextResponse.json([]);
     }
     
     const data = JSON.parse(text);
-    const posts = (data.posts || []).map((post: any) => ({
+    
+    let postsArray = [];
+    if (Array.isArray(data)) {
+      postsArray = data;
+    } else if (data.posts && Array.isArray(data.posts)) {
+      postsArray = data.posts;
+    } else if (data.data && Array.isArray(data.data)) {
+      postsArray = data.data;
+    }
+    
+    const posts = postsArray.map((post: any) => ({
       ...post,
       id: post.id || post._id || String(post.professor_id) + '-' + Date.now()
     }));
+    
     return NextResponse.json(posts);
   } catch (error) {
-    console.error('API Error:', error);
     return NextResponse.json([]);
   }
 }
+
+
 
 export async function POST(request: NextRequest) {
   try {

@@ -18,27 +18,26 @@ export default function Home() {
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const { toast } = useToast();
   
-  const filteredPosts = posts.filter(post => {
-    const content = post.conteudo || `${(post as any).titulo} ${(post as any).resumo} ${(post as any).conteudo}`;
-    return content.toLowerCase().includes(searchTerm.toLowerCase());
-  });
+  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (query?: string) => {
     try {
       setLoading(true);
-      const response = await fetch('/api/posts');
+      const url = query ? `/api/posts?query=${encodeURIComponent(query)}` : '/api/posts';
+      const response = await fetch(url);
+      
       if (response.ok) {
         const data = await response.json();
-      
         const posts: Post[] = Array.isArray(data) ? data : [];
         setPosts(posts);
+        setFilteredPosts(posts);
       } else {
-        console.error('Failed to fetch posts:', response.status, response.statusText);
         setPosts([]);
+        setFilteredPosts([]);
       }
     } catch (error) {
-      console.error('Error fetching posts:', error);
       setPosts([]);
+      setFilteredPosts([]);
     } finally {
       setLoading(false);
     }
@@ -55,6 +54,13 @@ export default function Home() {
     checkAuthStatus();
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchPosts(searchTerm || undefined);
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
 
 

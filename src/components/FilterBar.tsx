@@ -21,8 +21,6 @@ export function FilterBar({
           className="pl-12 h-12 text-black placeholder:text-gray-500 bg-white border-2 border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 rounded-lg shadow-sm"
         />
       </div>
-      
-
     </div>
   );
 }
