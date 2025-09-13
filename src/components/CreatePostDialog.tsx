@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -9,7 +9,7 @@ import { Post } from "@/utils/postUtils"
 interface CreatePostDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreatePost: (post:  Pick<Post, 'titulo' | 'resumo' | 'conteudo'>) => void;
+  onCreatePost: (post: Pick<Post, 'titulo' | 'resumo' | 'conteudo'>) => void;
   editingPost?: Post | null;
 }
 
@@ -17,6 +17,18 @@ export function CreatePostDialog({ open, onOpenChange, onCreatePost, editingPost
   const [titulo, setTitulo] = useState("");
   const [resumo, setResumo] = useState("");
   const [conteudo, setConteudo] = useState("");
+
+  useEffect(() => {
+    if (editingPost) {
+      setTitulo(editingPost.titulo || "");
+      setResumo(editingPost.resumo || "");
+      setConteudo(editingPost.conteudo || "");
+    } else {
+      setTitulo("");
+      setResumo("");
+      setConteudo("");
+    }
+  }, [editingPost, open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

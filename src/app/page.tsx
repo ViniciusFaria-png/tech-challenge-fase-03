@@ -5,7 +5,8 @@ import { Header } from "../components/Header";
 import { PostCard } from "../components/PostCard";
 import { FilterBar } from "../components/FilterBar";
 import { CreatePostDialog } from "../components/CreatePostDialog";
-import { Post, ApiPost, transformApiPost } from "../utils/postUtils";
+import { Post } from "../utils/postUtils";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,27 +15,22 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const { toast } = useToast();
   
   const filteredPosts = posts.filter(post => {
-    const content = post.content || `${(post as any).titulo} ${(post as any).resumo} ${(post as any).conteudo}`;
+    const content = post.conteudo || `${(post as any).titulo} ${(post as any).resumo} ${(post as any).conteudo}`;
     return content.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      console.log('Fetching posts from /api/posts');
       const response = await fetch('/api/posts');
-      console.log('Response status:', response.status);
       if (response.ok) {
         const data = await response.json();
-        console.log('Raw API data:', data);
-        console.log('Data type:', typeof data, 'Is array:', Array.isArray(data));
-        const apiPosts: ApiPost[] = Array.isArray(data) ? data : [];
-        console.log('API posts array length:', apiPosts.length);
-        const transformedPosts = apiPosts.map(transformApiPost);
-        console.log('Transformed posts:', transformedPosts);
-        setPosts(transformedPosts);
+      
+        const posts: Post[] = Array.isArray(data) ? data : [];
+        setPosts(posts);
       } else {
         console.error('Failed to fetch posts:', response.status, response.statusText);
         setPosts([]);
@@ -59,7 +55,7 @@ export default function Home() {
 
 
 
-  const handleCreatePost = async (postData: Omit<Post, 'titulo' | 'resumo' | 'conteudo'>) => {
+  const handleCreatePost = async (postData: Pick<Post, 'titulo' | 'resumo' | 'conteudo'>) => {
     try {
       const response = await fetch('/api/posts', {
         method: 'POST',
@@ -67,23 +63,35 @@ export default function Home() {
         body: JSON.stringify(postData)
       });
       if (response.ok) {
-        alert('Post created successfully!');
-        fetchPosts();
+        await fetchPosts();
+        toast({
+          variant: "success",
+          title: "Success!",
+          description: "Post created successfully!"
+        });
       } else {
-        alert('Failed to create post. Please try again.');
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to create post. Please try again."
+        });
       }
     } catch (error) {
       console.error('Error creating post:', error);
-      alert('Error creating post. Please try again.');
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error creating post. Please try again."
+      });
     }
   };
 
-  const handleEditPost = (post: Post) => {
-    setEditingPost(post);
+  const handleEditPost = (post: any) => {
+    setEditingPost(post as Post);
     setCreateDialogOpen(true);
   };
 
-  const handleUpdatePost = async (postData: Omit<Post, 'id' | 'timestamp' | 'likes' | 'comments' | 'isLiked'>) => {
+  const handleUpdatePost = async (postData: Pick<Post, 'id' | 'titulo' | 'resumo' | 'conteudo'>) => {
     if (!editingPost) return;
     
     try {
@@ -95,9 +103,25 @@ export default function Home() {
       if (response.ok) {
         fetchPosts();
         setEditingPost(null);
+        toast({
+          variant: "success",
+          title: "Success!",
+          description: "Post updated successfully!"
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to update post. Please try again."
+        });
       }
     } catch (error) {
       console.error('Error updating post:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error updating post. Please try again."
+      });
     }
   };
 
@@ -108,9 +132,25 @@ export default function Home() {
       });
       if (response.ok) {
         fetchPosts();
+        toast({
+          variant: "success",
+          title: "Success!",
+          description: "Post deleted successfully!"
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to delete post. Please try again."
+        });
       }
     } catch (error) {
       console.error('Error deleting post:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error deleting post. Please try again."
+      });
     }
   };
 
@@ -153,10 +193,10 @@ export default function Home() {
           {/* Hero Section */}
           <div className="text-center space-y-4 py-16 px-8 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-xl">
             <h1 className="text-5xl font-bold text-white mb-4">
-              Teacher <span className="text-pink-400">Posts</span>
+              Posts de <span className="text-pink-400">Professores</span>
             </h1>
             <p className="text-xl text-white max-w-3xl mx-auto">
-              Discover inspiring stories, creative lessons, and educational insights from teachers around the world.
+              Descubra histórias inspiradoras, aulas criativas e insights educacionais de professores ao redor do mundo.
             </p>
           </div>
 
@@ -181,8 +221,8 @@ export default function Home() {
               </div>
             ) : filteredPosts.length > 0 ? (
               <div className="space-y-6">
-                {filteredPosts.map((post) => (
-                  <div key={post.id} className="transform hover:scale-[1.01] transition-all duration-200">
+                {filteredPosts.map((post, index) => (
+                  <div key={post.id || `post-${index}`} className="transform hover:scale-[1.01] transition-all duration-200">
                     <PostCard 
                       post={post}
                       isLoggedIn={isLoggedIn}
@@ -198,10 +238,12 @@ export default function Home() {
                   <div className="text-6xl mb-4">📚</div>
                   <h3 className="text-2xl font-bold text-black">No posts found</h3>
                   <p className="text-gray-600 max-w-md mx-auto">
-                    {searchTerm ? 
-                      "Try adjusting your search terms or browse all posts." : 
-                      "Be the first to share your teaching experience!"
-                    }
+                    {(() => {
+                      const message = searchTerm 
+                        ? "Try adjusting your search terms or browse all posts." 
+                        : "Be the first to share your teaching experience!";
+                      return message;
+                    })()}
                   </p>
                   {isLoggedIn && !searchTerm && (
                     <button

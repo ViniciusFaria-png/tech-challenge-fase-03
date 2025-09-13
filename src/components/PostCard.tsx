@@ -26,6 +26,7 @@ interface PostCardProps {
 export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCardProps) {
   // Handle both transformed and raw API data
   const titulo = post.titulo || post.content?.split('\n\n')[0] || 'Untitled';
+  const resumo = post.resumo || post.content?.split('\n\n')[1] || '';
   const conteudo = post.conteudo || post.content?.split('\n\n')[2] || '';
   const timestamp = post.timestamp || (post.created_at ? new Date(post.created_at).toLocaleDateString() : '');
   
@@ -35,6 +36,11 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-black mb-3 leading-tight">{titulo}</h2>
+            {resumo && (
+              <CardContent className="pb-2 pt-0">
+                <p className="text-gray-700 font-medium text-sm italic leading-relaxed">{resumo}</p>
+              </CardContent>
+            )}
             <div className="flex items-center text-sm text-gray-600">
               <Clock className="h-4 w-4 mr-2 text-pink-500" />
               <span className="font-medium">{timestamp}</span>
@@ -51,14 +57,14 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
               <DropdownMenuContent align="end" className="bg-white border-2 border-gray-200 shadow-lg">
                 <DropdownMenuItem onClick={() => onEdit?.(post)} className="hover:bg-pink-50 text-black">
                   <Edit className="h-4 w-4 mr-2 text-pink-500" />
-                  Edit Post
+                  Editar Post
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => post.id && onDelete?.(post.id)}
                   className="hover:bg-red-50 text-red-600"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Post
+                  Excluir Post
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -66,8 +72,10 @@ export function PostCard({ post, isLoggedIn = false, onEdit, onDelete }: PostCar
         </div>
       </CardHeader>
       
+      
+      
       {conteudo && (
-        <CardContent className="pt-0 p-6">
+        <CardContent >
           <div className="prose prose-sm max-w-none">
             <p className="text-black leading-relaxed text-justify text-base">{conteudo}</p>
           </div>

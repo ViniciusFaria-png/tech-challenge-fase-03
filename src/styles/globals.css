@@ -129,6 +129,57 @@
   }
 }
 
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-in {
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+.animate-out {
+  animation: slideOutToRight 0.2s ease-in;
+}
+
+.fade-out-80 {
+  animation: fadeOut 0.2s ease-in;
+}
+
+.slide-in-from-top-full {
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+.slide-out-to-right-full {
+  animation: slideOutToRight 0.2s ease-in;
+}
+
 /**
  * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
  */
