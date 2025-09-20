@@ -43,7 +43,7 @@ export function PostCard({ post, isLoggedIn = false, isProfessor = false, onEdit
   return (
     <Card 
       className="w-full bg-white border-2 border-gray-200 hover:border-pink-300 hover:shadow-xl transition-all duration-200 rounded-xl cursor-pointer"
-      onClick={handleCardClick}
+      
     >
       <CardHeader className="pb-4 bg-gray-50 rounded-t-xl">
         <div className="flex items-start justify-between">
@@ -68,6 +68,10 @@ export function PostCard({ post, isLoggedIn = false, isProfessor = false, onEdit
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white border-2 border-gray-200 shadow-lg">
+                 <DropdownMenuItem onClick={handleCardClick} className="hover:bg-pink-50 text-black">
+                  <Edit className="h-4 w-4 mr-2 text-pink-500" />
+                  View Post
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit?.(post)} className="hover:bg-pink-50 text-black">
                   <Edit className="h-4 w-4 mr-2 text-pink-500" />
                   Editar Post
