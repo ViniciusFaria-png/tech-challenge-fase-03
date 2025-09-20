@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -61,9 +61,9 @@ export function CreatePostDialog({ open, onOpenChange, onCreatePost, editingPost
           <DialogTitle className="text-3xl font-bold text-black mb-2">
             {editingPost ? "Edit Post" : "Create New Post"}
           </DialogTitle>
-          <p className="text-gray-600">
+          <DialogDescription className="text-gray-600">
             {editingPost ? "Update your post content" : "Share your teaching experience with the community"}
-          </p>
+          </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">

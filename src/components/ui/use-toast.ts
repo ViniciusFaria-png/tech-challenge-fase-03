@@ -152,7 +152,7 @@ function toast({ ...props }: Toast) {
     toast: {
       ...props,
       id,
-      open: true,
+     // open: true,
       onClose: dismiss,
     },
   });

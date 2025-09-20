@@ -71,11 +71,11 @@ export default function PostPage() {
         <Card className="w-full bg-white border-2 border-gray-200 shadow-xl rounded-xl">
           <CardHeader className="pb-6 bg-gray-50 rounded-t-xl">
             <h1 className="text-4xl font-bold text-black mb-4 leading-tight">
-              {post.titulo || post.title || 'No Title'}
+              {post.titulo || 'No Title'}
             </h1>
-            {(post.resumo || post.summary) && (
+            {(post.resumo ) && (
               <p className="text-gray-700 font-medium text-lg italic leading-relaxed mb-4">
-                {post.resumo || post.summary}
+                {post.resumo }
               </p>
             )}
             <div className="flex items-center text-sm text-gray-600">
@@ -89,7 +89,7 @@ export default function PostPage() {
           <CardContent className="pt-6">
             <div className="prose prose-lg max-w-none">
               <p className="text-black leading-relaxed text-justify whitespace-pre-wrap">
-                {post.conteudo || post.content || 'No content available'}
+                {post.conteudo || 'No content available'}
               </p>
             </div>
           </CardContent>
