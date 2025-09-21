@@ -60,32 +60,34 @@ export function PostCard({ post, isLoggedIn = false, isProfessor = false, onEdit
             </div>
           </div>
           
-          {isLoggedIn && isProfessor && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="hover:bg-pink-100 text-gray-600 hover:text-pink-600">
-                  <MoreHorizontal className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white border-2 border-gray-200 shadow-lg">
-                 <DropdownMenuItem onClick={handleCardClick} className="hover:bg-pink-50 text-black">
-                  <Edit className="h-4 w-4 mr-2 text-pink-500" />
-                  View Post
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onEdit?.(post)} className="hover:bg-pink-50 text-black">
-                  <Edit className="h-4 w-4 mr-2 text-pink-500" />
-                  Editar Post
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => post.id && onDelete?.(post.id)}
-                  className="hover:bg-red-50 text-red-600"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Excluir Post
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="hover:bg-pink-100 text-gray-600 hover:text-pink-600">
+                <MoreHorizontal className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white border-2 border-gray-200 shadow-lg">
+               <DropdownMenuItem onClick={handleCardClick} className="hover:bg-pink-50 text-black">
+                <Edit className="h-4 w-4 mr-2 text-pink-500" />
+                View Post
+              </DropdownMenuItem>
+              {isLoggedIn && isProfessor && (
+                <>
+                  <DropdownMenuItem onClick={() => onEdit?.(post)} className="hover:bg-pink-50 text-black">
+                    <Edit className="h-4 w-4 mr-2 text-pink-500" />
+                    Editar Post
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => post.id && onDelete?.(post.id)}
+                    className="hover:bg-red-50 text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Excluir Post
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
 
